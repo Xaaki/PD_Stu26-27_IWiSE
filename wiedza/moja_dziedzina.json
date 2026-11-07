@@ -1,0 +1,276 @@
+{
+  "nazwa": "System wspomagający alokację PIP i zarządzanie energią statku w Elite Dangerous",
+  "cel": "decyzja",
+  "atrybuty": {
+    "przeciwnik_obecny": {
+      "typ": "wybor",
+      "pytanie": "Czy przeciwnik jest obecny na radarze?",
+      "wartosci": ["Tak", "Nie"]
+    },
+    "typ_statku": {
+      "typ": "wybor",
+      "pytanie": "Jaki jest typ Twój statku?",
+      "wartosci": ["Bojowy", "Exploracyjny", "Górniczy"]
+    },
+    "stan_oslon_proc": {
+      "typ": "liczba",
+      "pytanie": "Jaki jest obecny poziom osłon w procentach (0-100)?",
+      "zakres": [0, 100]
+    },
+    "stan_wep": {
+      "typ": "wybor",
+      "pytanie": "Jaki jest stan kondensatora uzbrojenia (WEP)?",
+      "wartosci": ["Pusty", "Optymalny"]
+    },
+    "dystans_do_celu": {
+      "typ": "liczba",
+      "pytanie": "Jaka jest odległość do celu w metrach (0-10000)?",
+      "zakres": [0, 10000]
+    },
+    "tryb": {
+      "typ": "wniosek",
+      "wartosci": ["walka", "ucieczka", "spokojny"]
+    },
+    "decyzja": {
+      "typ": "wniosek",
+      "wartosci": [
+        "PIP_3SYS_1ENG_2WEP",
+        "PIP_3SYS_2ENG_1WEP",
+        "PIP_2SYS_0ENG_4WEP",
+        "PIP_2SYS_1ENG_3WEP",
+        "PIP_2SYS_2ENG_2WEP",
+        "PIP_2SYS_3ENG_1WEP",
+        "PIP_2SYS_4ENG_0WEP",
+        "PIP_4SYS_1ENG_1WEP",
+        "PIP_3SYS_3ENG_0WEP",
+        "PIP_1SYS_4ENG_1WEP",
+        "PIP_0SYS_4ENG_2WEP",
+        "PIP_1SYS_1ENG_4WEP"
+      ]
+    }
+  },
+  "reguly": [
+    {
+      "id": "P1",
+      "jesli": [
+        ["przeciwnik_obecny", "==", "Tak"],
+        ["typ_statku", "==", "Bojowy"]
+      ],
+      "to": ["tryb", "walka"],
+      "metafora": "Obecność wroga i statek bojowy oznaczają konieczność podjęcia natychmiastowej walki."
+    },
+    {
+      "id": "P2_1",
+      "jesli": [
+        ["przeciwnik_obecny", "==", "Tak"],
+        ["typ_statku", "==", "Exploracyjny"]
+      ],
+      "to": ["tryb", "ucieczka"],
+      "metafora": "Lekki statek eksploracyjny nie ma szans w walce i musi ewakuować się z strefy zagrożenia."
+    },
+    {
+      "id": "P2_2",
+      "jesli": [
+        ["przeciwnik_obecny", "==", "Tak"],
+        ["typ_statku", "==", "Górniczy"]
+      ],
+      "to": ["tryb", "ucieczka"],
+      "metafora": "Ciężki statek wydobywczy jest zbyt mało zwrotny na pojedynek i musi natychmiast uciekać."
+    },
+    {
+      "id": "P3",
+      "jesli": [["przeciwnik_obecny", "==", "Nie"]],
+      "to": ["tryb", "spokojny"],
+      "metafora": "Brak przeciwników oznacza bezpieczną przelotową sytuację taktyczną."
+    },
+    {
+      "id": "R1",
+      "jesli": [
+        ["tryb", "==", "walka"],
+        ["stan_oslon_proc", "<=", 25],
+        ["stan_wep", "==", "Pusty"]
+      ],
+      "to": ["decyzja", "PIP_3SYS_1ENG_2WEP"],
+      "metafora": "Padające tarcze i brak mocy broni wymagają priorytetu dla SYS i częściowego ładowania WEP.",
+      "coto": "Alokacja defensywna przy braku broni: 3 PIP-y SYS na tarcze, 1 PIP ENG na zwrot i 2 PIP-y WEP."
+    },
+    {
+      "id": "R2",
+      "jesli": [
+        ["tryb", "==", "walka"],
+        ["stan_oslon_proc", "<=", 25],
+        ["stan_wep", "==", "Optymalny"]
+      ],
+      "to": ["decyzja", "PIP_3SYS_2ENG_1WEP"],
+      "metafora": "Przetrwanie krytycznego stanu osłon z zachowaniem zwrotności, gdy broń jest już naładowana.",
+      "coto": "Alokacja zasilania osłon z mobilnością: 3 PIP-y SYS, 2 PIP-y ENG oraz 1 PIP WEP."
+    },
+    {
+      "id": "R3",
+      "jesli": [
+        ["tryb", "==", "walka"],
+        ["stan_oslon_proc", ">", 25],
+        ["dystans_do_celu", "<=", 1500],
+        ["stan_wep", "==", "Pusty"]
+      ],
+      "to": ["decyzja", "PIP_2SYS_0ENG_4WEP"],
+      "metafora": "Bliski dystans przy bezpiecznych tarczach to okazja na maksymalne lanie ognia w cel.",
+      "coto": "Maksymalna agresja ogniowa na krótkim dystansie: 2 PIP-y SYS i 4 PIP-y WEP."
+    },
+    {
+      "id": "R4",
+      "jesli": [
+        ["tryb", "==", "walka"],
+        ["stan_oslon_proc", ">", 25],
+        ["dystans_do_celu", "<=", 1500],
+        ["stan_wep", "==", "Optymalny"]
+      ],
+      "to": ["decyzja", "PIP_2SYS_1ENG_3WEP"],
+      "metafora": "Bliska walka z gotową bronią pozwala zachować odrobinę manewrowości.",
+      "coto": "Ofensywny dogfight: 2 PIP-y SYS, 1 PIP ENG na utrzymanie zwrotu i 3 PIP-y WEP."
+    },
+    {
+      "id": "R5",
+      "jesli": [
+        ["tryb", "==", "walka"],
+        ["stan_oslon_proc", ">", 25],
+        ["dystans_do_celu", ">", 1500],
+        ["stan_wep", "==", "Pusty"]
+      ],
+      "to": ["decyzja", "PIP_2SYS_2ENG_2WEP"],
+      "metafora": "Walka na dystans z wyczerpanym uzbrojeniem wymusza równomierny podział mocy.",
+      "coto": "Zrównoważona alokacja taktyczna: 2 PIP-y SYS, 2 PIP-y ENG i 2 PIP-y WEP."
+    },
+    {
+      "id": "R6",
+      "jesli": [
+        ["tryb", "==", "walka"],
+        ["stan_oslon_proc", ">", 25],
+        ["dystans_do_celu", ">", 1500],
+        ["stan_wep", "==", "Optymalny"]
+      ],
+      "to": ["decyzja", "PIP_2SYS_3ENG_1WEP"],
+      "metafora": "Dystans z gotową bronią umożliwia podkręcenie silników w celu dogonienia lub wymijania wroga.",
+      "coto": "Pościg/manewry dystansowe: 2 PIP-y SYS, 3 PIP-y ENG i 1 PIP WEP."
+    },
+    {
+      "id": "R7",
+      "jesli": [
+        ["tryb", "==", "ucieczka"],
+        ["typ_statku", "==", "Exploracyjny"]
+      ],
+      "to": ["decyzja", "PIP_2SYS_4ENG_0WEP"],
+      "metafora": "Statki eksploracyjne potrzebują pełnej mocy na silniki (boost), aby wyjść z zasięgu ognia.",
+      "coto": "Ewakuacja ekspedycyjna: 2 PIP-y SYS na osłony oraz maksymalne 4 PIP-y ENG na ucieczkę."
+    },
+    {
+      "id": "R8",
+      "jesli": [
+        ["tryb", "==", "ucieczka"],
+        ["typ_statku", "==", "Górniczy"]
+      ],
+      "to": ["decyzja", "PIP_2SYS_4ENG_0WEP"],
+      "metafora": "Powolny statki górnicze muszą natychmiast przekierować wszystko w napęd.",
+      "coto": "Ewakuacja ciężka: 2 PIP-y SYS na minimalną ochronę i 4 PIP-y ENG na ciągły Boost."
+    },
+    {
+      "id": "R9",
+      "jesli": [
+        ["tryb", "==", "spokojny"],
+        ["typ_statku", "==", "Bojowy"],
+        ["stan_oslon_proc", "<=", 25]
+      ],
+      "to": ["decyzja", "PIP_4SYS_1ENG_1WEP"],
+      "metafora": "Lądowanie lub odpoczynek po walce z uszkodzonymi tarczami wymaga absolutnego priorytetu dla ich ładowania.",
+      "coto": "Tryb regeneracji tarczy po potyczce: 4 PIP-y SYS, 1 PIP ENG i 1 PIP WEP."
+    },
+    {
+      "id": "R10",
+      "jesli": [
+        ["tryb", "==", "spokojny"],
+        ["typ_statku", "==", "Bojowy"],
+        ["stan_oslon_proc", ">", 25]
+      ],
+      "to": ["decyzja", "PIP_2SYS_2ENG_2WEP"],
+      "metafora": "Bojowy statek w strefie bezpiecznej zachowuje uniwersalne, zrównoważone zasilanie.",
+      "coto": "Standardowy przelot bojowy: 2 PIP-y SYS, 2 PIP-y ENG i 2 PIP-y WEP."
+    },
+    {
+      "id": "R11",
+      "jesli": [
+        ["tryb", "==", "spokojny"],
+        ["typ_statku", "==", "Exploracyjny"],
+        ["stan_oslon_proc", "<=", 25]
+      ],
+      "to": ["decyzja", "PIP_3SYS_3ENG_0WEP"],
+      "metafora": "Eksplorator bez broni skupia się na odbudowie tarcz i utrzymaniu mobilności.",
+      "coto": "Naprawa i podróż eksploracyjna: 3 PIP-y SYS oraz 3 PIP-y ENG."
+    },
+    {
+      "id": "R12",
+      "jesli": [
+        ["tryb", "==", "spokojny"],
+        ["typ_statku", "==", "Exploracyjny"],
+        ["stan_oslon_proc", ">", 25]
+      ],
+      "to": ["decyzja", "PIP_1SYS_4ENG_1WEP"],
+      "metafora": "Pełne osłony w kosmosie pozwalają dać maks mocy na silniki skokowe i przelotowe.",
+      "coto": "Przelot eksploracyjny (Prędkość): 1 PIP SYS, 4 PIP-y ENG i 1 PIP WEP."
+    },
+    {
+      "id": "R13",
+      "jesli": [
+        ["tryb", "==", "spokojny"],
+        ["typ_statku", "==", "Górniczy"],
+        ["stan_oslon_proc", "<=", 25]
+      ],
+      "to": ["decyzja", "PIP_3SYS_1ENG_2WEP"],
+      "metafora": "Naruszone tarcze górnika przy braku wrogów wymagają SYS z zachowaniem ładowania laserów wydobywczych.",
+      "coto": "Ochrona pasa asteroidy: 3 PIP-y SYS, 1 PIP ENG i 2 PIP-y WEP."
+    },
+    {
+      "id": "R14",
+      "jesli": [
+        ["tryb", "==", "spokojny"],
+        ["typ_statku", "==", "Górniczy"],
+        ["stan_oslon_proc", ">", 25],
+        ["dystans_do_celu", "<=", 1500]
+      ],
+      "to": ["decyzja", "PIP_0SYS_4ENG_2WEP"],
+      "metafora": "Praca tuż przy asteroidzie wymusza maksymalną zwrotność silników i zasilanie narzędzi.",
+      "coto": "Wydobycie bliskie: 0 PIP SYS, 4 PIP-y ENG na manewrowanie wokół skały i 2 PIP-y WEP."
+    },
+    {
+      "id": "R15",
+      "jesli": [
+        ["tryb", "==", "spokojny"],
+        ["typ_statku", "==", "Górniczy"],
+        ["stan_oslon_proc", ">", 25],
+        ["dystans_do_celu", ">", 1500]
+      ],
+      "to": ["decyzja", "PIP_1SYS_1ENG_4WEP"],
+      "metafora": "Rzeźbienie asteroid z większej odległości wymaga stałego zasilania lasera wyburzającego.",
+      "coto": "Praca górnicza ciągła: 1 PIP SYS, 1 PIP ENG i 4 PIP-y WEP na stały laser wydobywczy."
+    },
+    {
+      "id": "R16_KRAŃCOWA_TARCZA",
+      "jesli": [
+        ["tryb", "==", "walka"],
+        ["stan_oslon_proc", "==", 0]
+      ],
+      "to": ["decyzja", "PIP_4SYS_1ENG_1WEP"],
+      "metafora": "Całkowity brak osłon (0%) wymaga natychmiastowego awaryjnego podpięcia maksymalnej mocy pod SYS.",
+      "coto": "Awaria osłon w walce: 4 PIP-y SYS, 1 PIP ENG, 1 PIP WEP."
+    },
+    {
+      "id": "R17_KRAŃCOWY_DYSTANS",
+      "jesli": [
+        ["tryb", "==", "walka"],
+        ["dystans_do_celu", ">=", 6000]
+      ],
+      "to": ["decyzja", "PIP_1SYS_4ENG_1WEP"],
+      "metafora": "Bardzo duży dystans w walce skraca się wyłącznie maksymalną mocą na silniki.",
+      "coto": "Dolot taktyczny do celu: 1 PIP SYS, 4 PIP-y ENG i 1 PIP WEP."
+    }
+  ]
+}

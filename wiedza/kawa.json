@@ -1,0 +1,143 @@
+{
+  "nazwa": "Dobór kawy",
+  "cel": "kawa",
+  "atrybuty": {
+    "temperatura": {
+      "typ": "liczba",
+      "pytanie": "Jaka jest temperatura (°C)?",
+      "zakres": [-30, 45]
+    },
+    "pora_dnia": {
+      "typ": "wybor",
+      "pytanie": "Jaka jest pora dnia?",
+      "wartosci": ["rano", "popołudnie", "wieczór"]
+    },
+    "dodatek": {
+      "typ": "wybor",
+      "pytanie": "Jaki dodatek wybierasz?",
+      "wartosci": ["mleko", "czekolada", "brak"]
+    },
+    "kofeina_ok": {
+      "typ": "wybor",
+      "pytanie": "Czy możesz pić kofeinę?",
+      "wartosci": ["tak", "nie"]
+    },
+    "rodzaj_kawy": {
+      "typ": "wniosek",
+      "wartosci": ["zimna", "gorąca"]
+    },
+    "moc": {
+      "typ": "wniosek",
+      "wartosci": ["mocna", "bezkofeinowa", "zwykła"]
+    },
+    "kawa": {
+      "typ": "wniosek",
+      "wartosci": [
+        "espresso",
+        "chocolate cold coffee",
+        "latte bezkofeinowe",
+        "mrożona kawa bezkofeinowa",
+        "latte"
+      ]
+    }
+  },
+  "reguly": [
+    {
+      "id": "R1",
+      "jesli": [["temperatura", ">", 22]],
+      "to": ["rodzaj_kawy", "zimna"],
+      "metafora": "Jest ciepło, więc kawa na zimno."
+    },
+    {
+      "id": "R2",
+      "jesli": [["temperatura", "<=", 22]],
+      "to": ["rodzaj_kawy", "gorąca"],
+      "metafora": "Jest chłodno, więc kawa na gorąco."
+    },
+    {
+      "id": "R3",
+      "jesli": [["kofeina_ok", "==", "nie"]],
+      "to": ["moc", "bezkofeinowa"],
+      "metafora": "Brak tolerancji kofeiny wymaga bezkofeinowej."
+    },
+    {
+      "id": "R4",
+      "jesli": [
+        ["kofeina_ok", "==", "tak"],
+        ["pora_dnia", "==", "rano"]
+      ],
+      "to": ["moc", "mocna"],
+      "metafora": "Rano potrzebny jest mocny zastrzyk energii."
+    },
+    {
+      "id": "R5",
+      "jesli": [
+        ["kofeina_ok", "==", "tak"],
+        ["pora_dnia", "==", "popołudnie"]
+      ],
+      "to": ["moc", "zwykła"],
+      "metafora": "Popołudniu wystarczy zwykła moc."
+    },
+    {
+      "id": "R6",
+      "jesli": [
+        ["kofeina_ok", "==", "tak"],
+        ["pora_dnia", "==", "wieczór"]
+      ],
+      "to": ["moc", "bezkofeinowa"],
+      "metafora": "Wieczorem kofeina utrudnia sen."
+    },
+    {
+      "id": "R7",
+      "jesli": [
+        ["rodzaj_kawy", "==", "zimna"],
+        ["moc", "==", "bezkofeinowa"]
+      ],
+      "to": ["kawa", "mrożona kawa bezkofeinowa"],
+      "metafora": "Zimna bez kofeiny.",
+      "coto": "Mrożona kawa bezkofeinowa."
+    },
+    {
+      "id": "R8",
+      "jesli": [
+        ["rodzaj_kawy", "==", "gorąca"],
+        ["moc", "==", "bezkofeinowa"]
+      ],
+      "to": ["kawa", "latte bezkofeinowe"],
+      "metafora": "Ciepła bez kofeiny.",
+      "coto": "Latte bezkofeinowe."
+    },
+    {
+      "id": "R9",
+      "jesli": [
+        ["rodzaj_kawy", "==", "zimna"],
+        ["dodatek", "==", "czekolada"]
+      ],
+      "to": ["kawa", "chocolate cold coffee"],
+      "metafora": "Na zimno i z czekoladą.",
+      "coto": "Schłodzona kawa z czekoladą."
+    },
+    {
+      "id": "R15",
+      "jesli": [
+        ["rodzaj_kawy", "==", "gorąca"],
+        ["dodatek", "==", "brak"],
+        ["moc", "==", "mocna"]
+      ],
+      "to": ["kawa", "espresso"],
+      "metafora": "Mocna i czysta na gorąco.",
+      "coto": "Klasyczne espresso."
+    },
+    {
+      "id": "R16",
+      "jesli": [
+        ["rodzaj_kawy", "==", "gorąca"],
+        ["dodatek", "==", "mleko"],
+        ["moc", "==", "zwykła"]
+      ],
+      "to": ["kawa", "latte"],
+      "metafora": "Ciepła z mlekiem.",
+      "coto": "Klasyczne latte."
+    }
+  ]
+}
