@@ -80,13 +80,45 @@ def wnioskuj_wstecz(baza, cel, fakty, zapytaj, slad=None, powod=None):
     return None
 
 
+def opisz_regule(regula):
+    warunki = " ORAZ ".join(f"{a} {op} {w!r}" for a, op, w in regula["jesli"])
+    atrybut, wartosc = regula["to"]
+    return f"{regula['id']}: JEŚLI {warunki} TO {atrybut} = {wartosc!r}"
+
+
+def wyjasnij_jak(baza, slad):
+    po_id = {r["id"]: r for r in baza["reguly"]}
+    kroki = []
+    for nr, id_reguly in enumerate(slad, start=1):
+        regula = po_id[id_reguly]
+        linia = f"{nr}. {opisz_regule(regula)}"
+        if regula.get("metafora"):
+            linia += f"\n   → {regula['metafora']}"
+        kroki.append(linia)
+    return kroki
+
+
+def coto(baza, slad):
+    po_id = {r["id"]: r for r in baza["reguly"]}
+    for id_reguly in reversed(slad):
+        if po_id[id_reguly].get("coto"):
+            return po_id[id_reguly]["coto"]
+    return None
+
+
 def zapytaj_konsola(baza):
-    """Pytanie w konsoli."""
+    """Pytanie w konsoli z obsługą '?' (dlaczego pytam)."""
     def zapytaj(atrybut, powod):
         opis = baza["atrybuty"].get(atrybut, {})
         podpowiedz = f" ({'/'.join(opis['wartosci'])})" if "wartosci" in opis else ""
         while True:
-            odp = input(f"{opis.get('pytanie', atrybut)}{podpowiedz} ").strip()
+            odp = input(f"{opis.get('pytanie', atrybut)}{podpowiedz} (? = dlaczego pytam) ").strip()
+            if odp == "?":
+                if powod is not None:
+                    print("   Pytam, bo sprawdzam regułę:", opisz_regule(powod))
+                else:
+                    print("   Pytam bezpośrednio o wartość atrybutu.")
+                continue
             if opis.get("typ") == "liczba":
                 try:
                     return float(odp.replace(",", "."))
