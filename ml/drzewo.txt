@@ -1,0 +1,40 @@
+|--- przeciwnik_obecny_Tak <= 0.5
+|   |--- typ_statku_Exploracyjny <= 0.5
+|   |   |--- typ_statku_Bojowy <= 0.5
+|   |   |   |--- stan_oslon_proc <= 25.5
+|   |   |   |   |--- class: PIP_3SYS_1ENG_2WEP
+|   |   |   |--- stan_oslon_proc >  25.5
+|   |   |   |   |--- dystans_do_celu <= 1482.5
+|   |   |   |   |   |--- class: PIP_0SYS_4ENG_2WEP
+|   |   |   |   |--- dystans_do_celu >  1482.5
+|   |   |   |   |   |--- class: PIP_1SYS_1ENG_4WEP
+|   |   |--- typ_statku_Bojowy >  0.5
+|   |   |   |--- stan_oslon_proc <= 25.5
+|   |   |   |   |--- class: PIP_4SYS_1ENG_1WEP
+|   |   |   |--- stan_oslon_proc >  25.5
+|   |   |   |   |--- class: PIP_2SYS_2ENG_2WEP
+|   |--- typ_statku_Exploracyjny >  0.5
+|   |   |--- stan_oslon_proc <= 25.5
+|   |   |   |--- class: PIP_3SYS_3ENG_0WEP
+|   |   |--- stan_oslon_proc >  25.5
+|   |   |   |--- class: PIP_1SYS_4ENG_1WEP
+|--- przeciwnik_obecny_Tak >  0.5
+|   |--- typ_statku_Bojowy <= 0.5
+|   |   |--- class: PIP_2SYS_4ENG_0WEP
+|   |--- typ_statku_Bojowy >  0.5
+|   |   |--- stan_wep_Pusty <= 0.5
+|   |   |   |--- stan_oslon_proc <= 25.5
+|   |   |   |   |--- class: PIP_3SYS_2ENG_1WEP
+|   |   |   |--- stan_oslon_proc >  25.5
+|   |   |   |   |--- dystans_do_celu <= 1489.0
+|   |   |   |   |   |--- class: PIP_2SYS_1ENG_3WEP
+|   |   |   |   |--- dystans_do_celu >  1489.0
+|   |   |   |   |   |--- class: PIP_2SYS_3ENG_1WEP
+|   |   |--- stan_wep_Pusty >  0.5
+|   |   |   |--- stan_oslon_proc <= 25.5
+|   |   |   |   |--- class: PIP_3SYS_1ENG_2WEP
+|   |   |   |--- stan_oslon_proc >  25.5
+|   |   |   |   |--- dystans_do_celu <= 1541.5
+|   |   |   |   |   |--- class: PIP_2SYS_0ENG_4WEP
+|   |   |   |   |--- dystans_do_celu >  1541.5
+|   |   |   |   |   |--- class: PIP_2SYS_2ENG_2WEP
